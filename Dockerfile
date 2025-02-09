@@ -4,21 +4,17 @@
 # If you need more help, visit the Dockerfile reference guide at
 # https://docs.docker.com/go/dockerfile-reference/
 
-# 1. Download required dependencies.
-# 2. Setup server.
-# 3. Run application
-
-# TODO: 2025-02-09 15:27:21 [14:27:21 WARN]: [oshi.software.os.linux.LinuxOperatingSystem] Did not find udev library in operating system. Some features may not work.
-# TODO: Implement java user.
-# TODO: Add volume for persistent data.
+# TODO: Ensure Docker container has propper terminal.
 
 ARG VERSION_MINECRAFT="1.21.4"
 ARG VERSION_OPENJDK="21"
 ARG TYPE_PROJECT="paper"
+ARG SERVER_DIR="/opt/server"
+ARG SRC_DIR="/tmp"
 
-#####################
-# Stage: Packages   #
-#####################
+##########################
+#    Stage: Packages     #
+##########################
 FROM amazoncorretto:${VERSION_OPENJDK} AS packages
 
 # Ensure global arguments can be used within the scope of this stage.
@@ -35,40 +31,57 @@ RUN yum install -y jq wget && \
     /opt/get_papermc_jar.sh;
 
 
-#####################
-# Stage: Production #
-#####################
-FROM amazoncorretto:${VERSION_OPENJDK} AS production
+##########################
+# Stage: Production Base #
+##########################
+FROM amazoncorretto:${VERSION_OPENJDK} AS production_base
 
 # Ensure global arguments can be used within the scope of this stage.
 ARG TYPE_PROJECT
 ARG VERSION_MINECRAFT
+ARG SERVER_DIR
+ARG SRC_DIR
 
 # Export Docker arguments into the container.
+ENV SERVER_DIR=${SERVER_DIR}
+ENV SRC_DIR=${SRC_DIR}
+ENV TERM=xterm-256color
 ENV TYPE_PROJECT=${TYPE_PROJECT}
 ENV VERSION_MINECRAFT=${VERSION_MINECRAFT}
 
+RUN yum install -y udev
+
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
-# ARG UID=10001
-# RUN adduser \
-#     --disabled-password \
-#     --gecos "" \
-#     --home "/nonexistent" \
-#     --shell "/sbin/nologin" \
-#     --no-create-home \
-#     --uid "${UID}" \
-#     app-data
-# USER app-data
+RUN adduser -M --shell "/sbin/nologin" app-data
+USER app-data
 
-# RUN mkdir /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server
-WORKDIR /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server
+COPY --chown=app-data:app-data --from=packages /opt/server.jar ${SRC_DIR}/server.jar
+COPY --chown=app-data:app-data ./entrypoint.sh /entrypoint.sh
 
-COPY --chown=app-data:app-data --from=packages /opt/server.jar /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server/server.jar
-
-RUN chmod 744 /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server/server.jar && \
-    java -jar /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server/server.jar nogui && \
-    sed -i 's|eula=false|eula=true|' /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server/eula.txt;
+WORKDIR /opt/server
 
 EXPOSE 25565
-ENTRYPOINT ["/bin/sh", "-c", "java -Duser.language=en_US -Xmx3584M -jar /opt/${TYPE_PROJECT}_${VERSION_MINECRAFT}_server/server.jar nogui;"]
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
+
+
+##########################
+# Stage: Production Plus #
+##########################
+FROM production_base AS production_plus
+
+USER root
+
+RUN yum install -y wget; \
+    mkdir ${SRC_DIR}/plugins && \
+    chown app-data:app-data ${SRC_DIR}/plugins;
+
+USER app-data
+
+RUN wget -P ${SRC_DIR}/plugins https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsX-2.20.1.jar && \
+    wget -P ${SRC_DIR}/plugins https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsXChat-2.20.1.jar && \
+    wget -P ${SRC_DIR}/plugins https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsXSpawn-2.20.1.jar && \
+    wget -P ${SRC_DIR}/plugins https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsXDiscord-2.20.1.jar && \
+    wget -P ${SRC_DIR}/plugins https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.5/bluemap-5.5-paper.jar;
+
+EXPOSE 8100 25565

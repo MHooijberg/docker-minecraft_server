@@ -10,6 +10,7 @@ if [ "$LATEST_BUILD" != "null" ]; then
     # Download the latest Paper version
     wget -O /opt/server.jar $PAPERMC_URL
     echo "Download completed"
+    chmod 744 /opt/server.jar
     exit 0
 else
     echo "No stable build for version $VERSION_MINECRAFT found."
