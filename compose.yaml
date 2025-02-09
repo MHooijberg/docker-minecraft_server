@@ -12,10 +12,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mh_minecraft
+      # target: packages
+    image: mh_minecraft_server
     ports:
       - 80:80
-      - 25535:25535
+      - 25565:25565
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
