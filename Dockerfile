@@ -13,7 +13,7 @@ ARG SRC_DIR="/tmp"
 ##########################
 #    Stage: Packages     #
 ##########################
-FROM amazoncorretto:${VERSION_OPENJDK} AS packages
+FROM amazoncorretto:${VERSION_OPENJDK}-al2023-headless AS packages
 
 # Ensure global arguments can be used within the scope of this stage.
 ARG TYPE_PROJECT
@@ -32,7 +32,7 @@ RUN yum install -y jq wget && \
 ##########################
 # Stage: Production Base #
 ##########################
-FROM amazoncorretto:${VERSION_OPENJDK} AS production_base
+FROM amazoncorretto:${VERSION_OPENJDK}-al2023-headless AS production_base
 
 # Ensure global arguments can be used within the scope of this stage.
 ARG TYPE_PROJECT
