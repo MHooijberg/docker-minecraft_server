@@ -23,7 +23,7 @@ ARG VERSION_MINECRAFT
 ENV TYPE_PROJECT=${TYPE_PROJECT}
 ENV VERSION_MINECRAFT=${VERSION_MINECRAFT}
 
-COPY get_papermc_jar.sh /opt/get_papermc_jar.sh
+COPY --chown=root:root get_papermc_jar.sh /opt/get_papermc_jar.sh
 
 RUN yum install -y jq wget && \
     /bin/sh /opt/get_papermc_jar.sh;
