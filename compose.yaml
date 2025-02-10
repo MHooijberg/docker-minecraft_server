@@ -15,8 +15,8 @@ services:
       target: production_base
     image: mh_minecraft_papermc_server
     ports:
-      - 80:8100
-      - 25565:25565
+      - 0.0.0.0:80:8100
+      - 0.0.0.0:25565:25565
     volumes:
       - ./src:/opt/server
 
