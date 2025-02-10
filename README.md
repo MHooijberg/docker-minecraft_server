@@ -1,3 +1,9 @@
+![Static Badge](https://img.shields.io/badge/Docker-Documentation-blue?style=flat&logo=docker&logoColor=%23ffffff&labelColor=%232496ED&color=%230a0a0a&link=https%3A%2F%2Fdocs.docker.com)
+![Static Badge](https://img.shields.io/badge/Software-PaperMC-white?style=flat&labelColor=%23eaeaea&color=%230a0a0a&link=https%3A%2F%2Fpapermc.io)
+![Static Badge](https://img.shields.io/badge/Optional%20Plugin-BlueMap-white?style=flat&logo=GitHub&logoColor=%23ffffff&labelColor=%23010409&color=%23ff6a6a&link=https%3A%2F%2Fgithub.com%2FBlueMap-Minecraft%2FBlueMap)
+![Static Badge](https://img.shields.io/badge/Optional%20Plugin-EssentialsX-white?style=flat&logo=GitHub&logoColor=%23ffffff&labelColor=%23010409&color=%23ff6a6a&link=https%3A%2F%2Fgithub.com%2FEssentialsX%2FEssentials%2F)
+[![MIT License](https://img.shields.io/badge/License-MIT_License-yellow)](https://github.com/MHooijberg/docker-minecraft_server/blob/feature/setup/LICENSE)
+
 # Minecraft PaperMC Server with Docker
 
 This repository provides a Docker-based setup for running a **Minecraft PaperMC server**. The setup includes a `Dockerfile`, `compose.yaml`, and scripts to automate downloading and running the server.
@@ -8,6 +14,7 @@ This repository provides a Docker-based setup for running a **Minecraft PaperMC 
 - Automatically downloads the latest **PaperMC** JAR file.
 - Exposes Minecraft server port **25565**.
 - Includes a customizable `entrypoint.sh` script.
+- Optional installation of BlueMap and EssentialsX.
 
 ## Getting Started
 
@@ -51,6 +58,7 @@ Ensure you have the following installed:
   - **25565** (Minecraft default port)
   - **80:8100** (Additional exposed port)
 - Persistent storage is mounted under `./src` to `/opt/server`.
+- `compose.yaml` can be configured to install extra plugins on first bootup.
 
 ## File Overview
 
