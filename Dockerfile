@@ -26,7 +26,7 @@ ENV VERSION_MINECRAFT=${VERSION_MINECRAFT}
 COPY get_papermc_jar.sh /opt/get_papermc_jar.sh
 
 RUN yum install -y jq wget && \
-    /opt/get_papermc_jar.sh;
+    /bin/sh /opt/get_papermc_jar.sh;
 
 
 ##########################
