@@ -4,8 +4,6 @@
 # If you need more help, visit the Dockerfile reference guide at
 # https://docs.docker.com/go/dockerfile-reference/
 
-# TODO: Ensure Docker container has propper terminal.
-
 ARG VERSION_MINECRAFT="1.21.4"
 ARG VERSION_OPENJDK="21"
 ARG TYPE_PROJECT="paper"
